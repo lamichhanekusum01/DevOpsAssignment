@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from your Git repository
+                git 'https://github.com/lamichhanekusum01/DevOpsAssignment.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+           steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerhub_id'}) {
+                        bat "docker build -t devopsassignment:latest -f Dockerfile ."
+                        bat "docker tag devopsassignment:latest kusuml/devops-assignment"
+                        bat "docker push kusuml/devops-assignment"
+                    }
+                }
+            }
+        }
+
+        stage('Trigger CD Pipeline') {
+            steps {
+                build job: "CD_Pipeline", wait: true
+            }
+        }
+    }
+}
