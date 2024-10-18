@@ -5,14 +5,18 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from your Git repository
-                git 'https://github.com/lamichhanekusum01/DevOpsAssignment.git'
+                git branch: 'master',
+                changelog: false, 
+                poll: false, 
+                url: 'https://github.com/lamichhanekusum01/DevOpsAssignment.git',
+                credentialsId: 'afbd6b50-1c98-4ef5-96aa-9754d16adb40' 
             }
         }
         
         stage('Build Docker Image') {
            steps {
                 script {
-                    withDockerRegistry(credentialsId: 'dockerhub_id') {
+                    withDockerRegistry(credentialsId: '80b3ae82-55ff-4caa-b42f-1faaec455095') {
                         bat "docker build -t devopsassignment:latest -f Dockerfile ."
                         bat "docker tag devopsassignment:latest kusuml/devops-assignment"
                         bat "docker push kusuml/devops-assignment"
@@ -20,11 +24,12 @@ pipeline {
                 }
             }
         }
-
-        stage('Trigger CD Pipeline') {
+        
+         stage('Trigger CD Pipeline') {
             steps {
-                build job: "CD_Pipeline", wait: true
+                build job: "CD Pipeline"
             }
         }
+
     }
 }
